@@ -1,5 +1,5 @@
 /* 
-Art Game made for FACS 3935 "Screen-Based Fluid Interfaces"
+Art Game made for FACS 3930 "Screen-Based Fluid Interfaces"
 Creative team: Alexander Moakler, Alexander Ornat, Ryan Chang
 
 PRIMORDIA
