@@ -24,3 +24,4 @@ class Animation {
   int getWidth() {
     return images[0].width;
   }
+}
