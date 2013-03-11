@@ -16,6 +16,7 @@ RepulsionField[] repulsionFields;
 
 void setup () {
   size(screenX, screenY);
+  colorMode(HSB);
   
   // initialize cells
   cells = new Cell[numCells];
