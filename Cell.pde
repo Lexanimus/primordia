@@ -1,5 +1,5 @@
 class Cell implements Comparable<Cell>{
-  boolean active;
+  boolean active, dying;
   
   float xPos, yPos, radius;
   float frictionCoefficient;
@@ -10,6 +10,11 @@ class Cell implements Comparable<Cell>{
   
   color fillColour;
   int teamColour;
+  
+  float minRadius = 5;
+  
+  PImage nucleus;
+  int nucleusAlpha = 0;
   
   Cell(int xPos, int yPos, int radius, int targetHue) {
     this.xPos = xPos;
@@ -26,20 +31,26 @@ class Cell implements Comparable<Cell>{
     accel = new PVector(0, 0);
     friction = new PVector(0, 0);
     
-    fillColour = color(random(10) + targetHue, 180, 240, 120);
+    fillColour = color(random(20) + targetHue, 180, 240, 120);
     
     active = true;
+    nucleus = null;
   }
   
   int compareTo(Cell other) {
     return (int)(this.radius - other.radius);
   }
   
-  void kill() {
+  void disable() {
     active = false;
     radius = 0;
     xPos = -screenX*10;
     yPos = -screenY*10;
+    killCell(teamColour);
+  }
+  
+  void kill() {
+    dying = true;
   }
 
   public void noms(Cell[] otherCells) {
@@ -68,7 +79,7 @@ class Cell implements Comparable<Cell>{
             bigger.radius += amount/2;
             smaller.radius -= amount;
             
-            if (smaller.radius <= 2) {
+            if (smaller.radius <= minRadius) {
               smaller.kill();
             }
           }
@@ -111,22 +122,46 @@ class Cell implements Comparable<Cell>{
   }
   
   void update() {
-    // occcasionally add a force in a random direction
-    float impulseChance = random(20);
-    if (impulseChance <= 2) {
-      PVector impulse = PVector.mult(PVector.random2D(), impulseChance);
-      forces.add(impulse);
+    if (dying) {
+      radius -= 0.5;
+      if (radius <= 0)
+        disable();
+    } else {
+      // occcasionally add a force in a random direction
+      float impulseChance = random(20);
+      if (impulseChance <= 2) {
+        PVector impulse = PVector.mult(PVector.random2D(), impulseChance);
+        forces.add(impulse);
+      }
+      applyForces();
     }
-    applyForces();
+  }
+  
+  void setNucleus(PImage img) {
+    nucleus = img;
   }
   
   void display(int screenX, int screenY) {
-    fill(fillColour);
     noStroke();
+    fill(fillColour);
+    
+    // main body
     ellipse(round(xPos), round(yPos), round(radius)*1.95, round(radius)*1.95);
     image(cellContour, round(xPos) - round(radius), round(yPos) - round(radius), round(radius)*2, round(radius)*2);
-    tint(255, 126);
-    image(cellContour, round(xPos) - round(radius) * 0.5, round(yPos) - round(radius) * 0.5, round(radius), round(radius));
-    tint(255, 126);
+    
+    // nucleus
+    PVector offset = new PVector(-speed.x, -speed.y);
+    offset.setMag(min(offset.mag(), radius));
+    image(cellContour, round(xPos) - round(radius) * 0.8 + offset.x, round(yPos) - round(radius) * 0.8 + offset.y, round(radius)*8/5, round(radius)*8/5);
+    offset.setMag(min(offset.mag()*2, radius));
+    ellipse(round(xPos) + offset.x, round(yPos) + offset.y, round(radius)*1.95/2, round(radius)*1.95/2);
+    if (nucleus != null) {
+      nucleusAlpha = min(255, nucleusAlpha + 15);
+      tint(255, nucleusAlpha);
+      image(nucleus, round(xPos) - round(radius) * 0.5 + offset.x, round(yPos) - round(radius) * 0.5 + offset.y, round(radius), round(radius));
+      tint(255, 255);
+    }
+    image(cellContour, round(xPos) - round(radius) * 0.5 + offset.x, round(yPos) - round(radius) * 0.5 + offset.y, round(radius), round(radius));
+    
   }
 }
