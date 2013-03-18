@@ -14,9 +14,14 @@ int numCells = 100;
 Cell[] cells;
 RepulsionField[] repulsionFields;
 
+PImage cellContour;
+
 void setup () {
   size(screenX, screenY);
   colorMode(HSB);
+  
+  // load images
+  cellContour = loadImage("cell.png");
   
   // initialize cells
   cells = new Cell[numCells];

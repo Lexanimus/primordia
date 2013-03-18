@@ -122,13 +122,11 @@ class Cell implements Comparable<Cell>{
   
   void display(int screenX, int screenY) {
     fill(fillColour);
-    strokeWeight(2);
-    stroke(color(0, 0, 0));
-//    for (int x = -1; x <= 1; x++) {
-//      for (int y = -1; y <= 1; y++) {
-    int x = 0; int y = 0;
-        ellipse(round(xPos)+x*screenX, round(yPos)+y*screenY, round(radius)*2, round(radius)*2);
-//      }
-//    }
+    noStroke();
+    ellipse(round(xPos), round(yPos), round(radius)*1.95, round(radius)*1.95);
+    image(cellContour, round(xPos) - round(radius), round(yPos) - round(radius), round(radius)*2, round(radius)*2);
+    tint(255, 126);
+    image(cellContour, round(xPos) - round(radius) * 0.5, round(yPos) - round(radius) * 0.5, round(radius), round(radius));
+    tint(255, 126);
   }
 }
